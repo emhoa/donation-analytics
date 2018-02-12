@@ -15,9 +15,9 @@ with open(sys.argv[2], 'r') as fpt:
 
 with open(sys.argv[1], 'r') as finput, open(sys.argv[3], 'w') as foutput: # Read percentile
 	donor_dict = {}
-	rep_donor = 0
-	repdon_list = []
-	repdon_total = 0
+	rep_donor = {}
+	repdon_list = {}
+	repdon_total = {}
 
 	while True:
 		line = finput.readline()
@@ -34,11 +34,17 @@ with open(sys.argv[1], 'r') as finput, open(sys.argv[3], 'w') as foutput: # Read
 		TRANSACTION_AMT = int(round(float(entry[14])))
 		
 		id_string = NAME + ', ' + ZIP_CODE
-		if id_string not in donor_dict:
+		if id_string not in donor_dict or donor_dict[id_string] > TRANSACTION_DT:
 			donor_dict[id_string] = TRANSACTION_DT
 		elif donor_dict[id_string] < TRANSACTION_DT:
-			rep_donor += 1
-			repdon_total += TRANSACTION_AMT
-			bisect.insort(repdon_list, TRANSACTION_AMT)
-			pt_index = math.ceil(len(repdon_list) * percentile / 100) - 1
-			print(CMTE_ID, '|', ZIP_CODE, '|', TRANSACTION_DT, '|', repdon_list[pt_index], '|', repdon_total, '|', rep_donor, sep='', file=foutput)
+			if TRANSACTION_DT not in rep_donor: rep_donor[TRANSACTION_DT] = 0
+			rep_donor[TRANSACTION_DT] += 1
+			if TRANSACTION_DT not in repdon_total: repdon_total[TRANSACTION_DT] = 0
+			repdon_total[TRANSACTION_DT] += TRANSACTION_AMT
+			
+			don_string = str(TRANSACTION_DT) + ZIP_CODE
+			if don_string not in repdon_list: repdon_list[don_string] = []
+			bisect.insort(repdon_list[don_string], TRANSACTION_AMT)
+			pt_index = math.ceil(len(repdon_list[don_string]) * percentile / 100) - 1
+			print(CMTE_ID, '|', ZIP_CODE, '|', TRANSACTION_DT, '|', repdon_list[don_string][pt_index], '|', repdon_total[TRANSACTION_DT], '|', rep_donor[TRANSACTION_DT], sep='')
+			print(CMTE_ID, '|', ZIP_CODE, '|', TRANSACTION_DT, '|', repdon_list[don_string][pt_index], '|', repdon_total[TRANSACTION_DT], '|', rep_donor[TRANSACTION_DT], sep='', file=foutput)
