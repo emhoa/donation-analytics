@@ -46,5 +46,4 @@ with open(sys.argv[1], 'r') as finput, open(sys.argv[3], 'w') as foutput: # Read
 			if don_string not in repdon_list: repdon_list[don_string] = []
 			bisect.insort(repdon_list[don_string], TRANSACTION_AMT)
 			pt_index = math.ceil(len(repdon_list[don_string]) * percentile / 100) - 1
-			print(CMTE_ID, '|', ZIP_CODE, '|', TRANSACTION_DT, '|', repdon_list[don_string][pt_index], '|', repdon_total[TRANSACTION_DT], '|', rep_donor[TRANSACTION_DT], sep='')
 			print(CMTE_ID, '|', ZIP_CODE, '|', TRANSACTION_DT, '|', repdon_list[don_string][pt_index], '|', repdon_total[TRANSACTION_DT], '|', rep_donor[TRANSACTION_DT], sep='', file=foutput)
