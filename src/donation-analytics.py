@@ -34,14 +34,14 @@ with open(sys.argv[1], 'r') as finput, open(sys.argv[3], 'w') as foutput: # Read
 		TRANSACTION_AMT = int(round(float(entry[14])))
 		
 		id_string = NAME + ', ' + ZIP_CODE
-		if id_string not in donor_dict or donor_dict[id_string] > TRANSACTION_DT:
+		if id_string not in donor_dict:
 			donor_dict[id_string] = TRANSACTION_DT
-		elif donor_dict[id_string] < TRANSACTION_DT:
+		elif donor_dict[id_string] < TRANSACTION_DT or donor_dict[id_string] > TRANSACTION_DT:
+			if donor_dict[id_string] > TRANSACTION_DT: donor_dict[id_string] = TRANSACTION_DT
 			if TRANSACTION_DT not in rep_donor: rep_donor[TRANSACTION_DT] = 0
 			rep_donor[TRANSACTION_DT] += 1
 			if TRANSACTION_DT not in repdon_total: repdon_total[TRANSACTION_DT] = 0
 			repdon_total[TRANSACTION_DT] += TRANSACTION_AMT
-			
 			don_string = str(TRANSACTION_DT) + ZIP_CODE
 			if don_string not in repdon_list: repdon_list[don_string] = []
 			bisect.insort(repdon_list[don_string], TRANSACTION_AMT)
